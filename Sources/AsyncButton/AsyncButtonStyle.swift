@@ -34,10 +34,10 @@ extension AsyncButtonStyle {
 }
 
 public protocol AsyncButtonStyle {
-    associatedtype Body: View
+    associatedtype AsyncBody: View
     typealias AsyncConfiguration = AsyncButtonStyleConfiguration
     
-    @ViewBuilder func makeAsyncBody(configuration: AsyncConfiguration) -> Body
+    @ViewBuilder func makeAsyncBody(configuration: AsyncConfiguration) -> AsyncBody
 }
 
 public struct AsyncButtonStyleConfiguration {
