@@ -41,13 +41,20 @@ public protocol AsyncButtonStyle {
 }
 
 public struct AsyncButtonStyleConfiguration {
-    typealias Label = AnyView
-    typealias Button = AnyView
+    public typealias Label = AnyView
+    public typealias Button = AnyView
     
-    let isLoading: Bool
-    let label: Label
-    let button: Button
-    let cancel: () -> Void
+    public let isLoading: Bool
+    public let label: Label
+    public let button: Button
+    public let cancel: () -> Void
+    
+    public init(isLoading: Bool, label: Label, button: Button, cancel: @escaping () -> Void) {
+        self.isLoading = isLoading
+        self.label = label
+        self.button = button
+        self.cancel = cancel
+    }
 }
 
 fileprivate struct Test: View {
