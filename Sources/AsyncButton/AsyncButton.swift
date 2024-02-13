@@ -34,7 +34,7 @@ public struct AsyncButton<Label: View>: View {
                 }
             }
         } label: {
-            asyncButtonStyle.makeLabel(configuration: asyncLabelConfiguration)
+            asyncButtonStyle.makeAsyncLabel(configuration: asyncLabelConfiguration)
         }
         .simultaneousGesture(TapGesture().onEnded {})
         .gesture(
@@ -45,7 +45,7 @@ public struct AsyncButton<Label: View>: View {
         )
         let asyncConfiguration = AsyncButtonStyleButtonConfiguration(isLoading: task != nil, isPressed: isPressed, role: role, button: AnyView(button)) { task?.cancel() }
         return asyncButtonStyle
-            .makeButton(configuration: asyncConfiguration)
+            .makeAsyncButton(configuration: asyncConfiguration)
             .disabled(disabled)
     }
     public var isLoading: Bool { task != nil }

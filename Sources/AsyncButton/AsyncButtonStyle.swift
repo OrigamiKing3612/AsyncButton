@@ -16,29 +16,29 @@ extension EnvironmentValues {
 }
 
 public struct AnyAsyncButtonStyle: AsyncButtonStyle {
-    private let _makeLabel: (AsyncButtonStyle.AsyncLabelConfiguration) -> AnyView
-    private let _makeButton: (AsyncButtonStyle.AsyncButtonConfiguration) -> AnyView
+    private let _makeAsyncLabel: (AsyncButtonStyle.AsyncLabelConfiguration) -> AnyView
+    private let _makeAsyncButton: (AsyncButtonStyle.AsyncButtonConfiguration) -> AnyView
     
     public init<S: AsyncButtonStyle>(_ style: S) {
-        self._makeLabel = style.makeLabelTypeErased
-        self._makeButton = style.makeButtonTypeErased
+        self._makeAsyncLabel = style.makeAsyncLabelTypeErased
+        self._makeAsyncButton = style.makeAsyncButtonTypeErased
     }
     
-    public func makeLabel(configuration: AsyncLabelConfiguration) -> AnyView {
-        self._makeLabel(configuration)
+    public func makeAsyncLabel(configuration: AsyncLabelConfiguration) -> AnyView {
+        self._makeAsyncLabel(configuration)
     }
     
-    public func makeButton(configuration: AsyncButtonConfiguration) -> AnyView {
-        self._makeButton(configuration)
+    public func makeAsyncButton(configuration: AsyncButtonConfiguration) -> AnyView {
+        self._makeAsyncButton(configuration)
     }
 }
 
 extension AsyncButtonStyle {
-    public func makeLabelTypeErased(configuration: AsyncLabelConfiguration) -> AnyView {
-        AnyView(self.makeLabel(configuration: configuration))
+    public func makeAsyncLabelTypeErased(configuration: AsyncLabelConfiguration) -> AnyView {
+        AnyView(self.makeAsyncLabel(configuration: configuration))
     }
-    public func makeButtonTypeErased(configuration: AsyncButtonConfiguration) -> AnyView {
-        AnyView(self.makeButton(configuration: configuration))
+    public func makeAsyncButtonTypeErased(configuration: AsyncButtonConfiguration) -> AnyView {
+        AnyView(self.makeAsyncButton(configuration: configuration))
     }
 }
 
@@ -48,14 +48,14 @@ public protocol AsyncButtonStyle {
     typealias AsyncLabelConfiguration = AsyncButtonStyleLabelConfiguration
     typealias AsyncButtonConfiguration = AsyncButtonStyleButtonConfiguration
     
-    @ViewBuilder func makeLabel(configuration: AsyncLabelConfiguration) -> AsyncLabel
-    @ViewBuilder func makeButton(configuration: AsyncButtonConfiguration) -> AsyncButton
+    @ViewBuilder func makeAsyncLabel(configuration: AsyncLabelConfiguration) -> AsyncLabel
+    @ViewBuilder func makeAsyncButton(configuration: AsyncButtonConfiguration) -> AsyncButton
 }
 extension AsyncButtonStyle {
-    public func makeLabel(configuration: AsyncLabelConfiguration) -> some View {
+    public func makeAsyncLabel(configuration: AsyncLabelConfiguration) -> some View {
         configuration.label
     }
-    public func makeButton(configuration: AsyncButtonConfiguration) -> some View {
+    public func makeAsyncButton(configuration: AsyncButtonConfiguration) -> some View {
         configuration.button
     }
 }
