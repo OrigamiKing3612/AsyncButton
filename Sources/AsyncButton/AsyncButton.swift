@@ -3,21 +3,25 @@ import SwiftUI
 public struct AsyncButton<Label: View>: View {
     @Environment(\.onMainThread) private var onMainThread
     @Environment(\.disableButton) private var disableButton
+    @Environment(\.asyncButtonStyle) private var asyncButtonStyle
     
     public var role: ButtonRole?
     public var action: () async -> Void
-    @ViewBuilder public var label: () -> Label
+    @ViewBuilder public var label: Label
     
     @State private var task: Task<Void, Never>?
     
-    public init(role: ButtonRole? = nil, action: @escaping () async -> Void, label: @escaping () -> Label) { //TODO: instead of nil to ... sf symbol
+    @GestureState private var isPressed = false
+    
+    public init(role: ButtonRole? = nil, action: @escaping () async -> Void, label: @escaping () -> Label) {
         self.action = action
-        self.label = label
+        self.label = label()
         self.role = role
     }
     
     public var body: some View {
-        Button(role: role) {
+        let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(isLoading: task != nil, isPressed: isPressed, role: role, label: AnyView(label)) { task?.cancel() }
+        let button = Button(role: role) {
             if onMainThread {
                 task = Task {
                     await action()
@@ -30,25 +34,30 @@ public struct AsyncButton<Label: View>: View {
                 }
             }
         } label: {
-            label()
+            asyncButtonStyle.makeLabel(configuration: asyncLabelConfiguration)
         }
-        .disabled(disabled)
+        .simultaneousGesture(TapGesture().onEnded {})
+        .gesture(
+            LongPressGesture()
+                .updating($isPressed) { value, state, _ in
+                    state = value
+                }
+        )
+        let asyncConfiguration = AsyncButtonStyleButtonConfiguration(isLoading: task != nil, isPressed: isPressed, role: role, button: AnyView(button)) { task?.cancel() }
+        return asyncButtonStyle
+            .makeButton(configuration: asyncConfiguration)
+            .disabled(disabled)
     }
-    public var disabled: Bool {
-        if disableButton { task != nil } else { false }
-    }
+    public var isLoading: Bool { task != nil }
+    public var disabled: Bool { disableButton && task != nil }
 }
 
 extension AsyncButton where Label == Text {
     public init<S: StringProtocol>(_ title: S, role: ButtonRole? = nil, action: @escaping () async -> Void) {
-        self.init(role: role, action: action) {
-            Text(title)
-        }
+        self.init(role: role, action: action) { Text(title) }
     }
     public init(_ titleKey: LocalizedStringKey, role: ButtonRole? = nil, action: @escaping () async -> Void) {
-        self.init(role: role, action: action) {
-            Text(titleKey)
-        }
+        self.init(role: role, action: action) { Text(titleKey) }
     }
 }
 

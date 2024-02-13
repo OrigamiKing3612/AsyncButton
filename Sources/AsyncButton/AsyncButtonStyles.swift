@@ -1,12 +1,13 @@
 import SwiftUI
 
 public struct EllipsisAsyncButtonStyle: AsyncButtonStyle {
-    public func makeAsyncBody(configuration: AsyncConfiguration) -> some View {
+    public func makeLabel(configuration: AsyncLabelConfiguration) -> some View {
         configuration.label
             .opacity(configuration.isLoading ? 0 : 1)
             .overlay {
                 Image(systemName: "ellipsis")
                     .symbolEffect(.variableColor.iterative.dimInactiveLayers, options: .repeating, value: configuration.isLoading)
+                    .foregroundStyle(Color.accentColor)
                     .font(.title)
                     .opacity(configuration.isLoading ? 1 : 0)
             }
@@ -21,7 +22,7 @@ extension AsyncButtonStyle where Self == EllipsisAsyncButtonStyle {
 }
 
 public struct OverlayAsyncButtonStyle: AsyncButtonStyle {
-    public func makeAsyncBody(configuration: AsyncConfiguration) -> some View {
+    public func makeLabel(configuration: AsyncLabelConfiguration) -> some View {
         configuration.label
             .opacity(configuration.isLoading ? 0 : 1)
             .overlay {
@@ -30,5 +31,19 @@ public struct OverlayAsyncButtonStyle: AsyncButtonStyle {
                 }
             }
             .animation(.default, value: configuration.isLoading)
+    }
+}
+
+extension AsyncButtonStyle where Self == OverlayAsyncButtonStyle {
+    public static var overlay: OverlayAsyncButtonStyle {
+        OverlayAsyncButtonStyle()
+    }
+}
+
+public struct NoneAsyncButtonStyle: AsyncButtonStyle {}
+
+extension AsyncButtonStyle where Self == NoneAsyncButtonStyle {
+    public static var none: NoneAsyncButtonStyle {
+        NoneAsyncButtonStyle()
     }
 }
