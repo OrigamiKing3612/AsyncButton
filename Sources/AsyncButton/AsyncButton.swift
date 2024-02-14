@@ -7,7 +7,7 @@ public struct AsyncButton<Label: View>: View {
     
     public var role: ButtonRole?
     public var action: () async -> Void
-    @ViewBuilder public var label: Label
+    @ViewBuilder public var label: () -> Label
     
     @State private var task: Task<Void, Never>?
     
@@ -15,12 +15,12 @@ public struct AsyncButton<Label: View>: View {
     
     public init(role: ButtonRole? = nil, action: @escaping () async -> Void, label: @escaping () -> Label) {
         self.action = action
-        self.label = label()
+        self.label = label
         self.role = role
     }
     
     public var body: some View {
-        let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(isLoading: task != nil, isPressed: isPressed, role: role, label: AnyView(label)) { task?.cancel() }
+        let asyncLabelConfiguration = AsyncButtonStyleLabelConfiguration(isLoading: task != nil, isPressed: isPressed, role: role, label: AnyView(label())) { task?.cancel() }
         let button = Button(role: role) {
             if onMainThread {
                 task = Task {
@@ -58,6 +58,15 @@ extension AsyncButton where Label == Text {
     }
     public init(_ titleKey: LocalizedStringKey, role: ButtonRole? = nil, action: @escaping () async -> Void) {
         self.init(role: role, action: action) { Text(titleKey) }
+    }
+    public init(verbatim: String, role: ButtonRole? = nil, action: @escaping () async -> Void) {
+        self.init(role: role, action: action) { Text(verbatim: verbatim) }
+    }
+}
+
+extension AsyncButton where Label == Image {
+    public init(systemName: String, role: ButtonRole? = nil, action: @escaping () async -> Void) {
+        self.init(role: role, action: action) { Image(systemName: systemName) }
     }
 }
 
